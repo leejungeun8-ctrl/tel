@@ -1,0 +1,5 @@
+{
+  "name": "Telegram Bot Commander",
+  "description": "A sophisticated Telegram messenger interface that allows you to manage multiple recipients and send messages through your custom Telegram Bot ID. It features a full-featured UI inspired by Telegram Desktop with real API integration capabilities.",
+  "requestFramePermissions": []
+}
