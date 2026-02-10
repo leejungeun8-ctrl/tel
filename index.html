@@ -28,18 +28,28 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #a1a1a1;
     }
+    #root:empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-weight: 300;
+      color: #888;
+    }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
+  <script type="importmap">
+  {
+    "imports": {
+      "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+      "react/": "https://esm.sh/react@^19.2.4/",
+      "react": "https://esm.sh/react@^19.2.4"
+    }
   }
-}
-</script>
+  </script>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">Loading Application...</div>
+  <!-- 명시적으로 index.tsx를 로드하여 Vercel 배포 시 엔트리 포인트 인식 문제 해결 -->
+  <script type="module" src="./index.tsx"></script>
 </body>
 </html>

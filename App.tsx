@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Sidebar } from './components/Sidebar';
-import { ChatWindow } from './components/ChatWindow';
-import { SettingsModal } from './components/SettingsModal';
-import { AppState, Recipient, Message, BotConfig } from './types';
-import { sendTelegramMessage } from './services/telegramService';
+import React, { useState, useEffect } from 'react';
+import { Sidebar } from './components/Sidebar.tsx';
+import { ChatWindow } from './components/ChatWindow.tsx';
+import { SettingsModal } from './components/SettingsModal.tsx';
+import { AppState, Recipient, Message, BotConfig } from './types.ts';
+import { sendTelegramMessage } from './services/telegramService.ts';
 
 const DEFAULT_RECIPIENTS: Recipient[] = [
   { id: '12345678', name: 'Dev Support', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev', lastMessage: 'System: Ready', lastTime: 'now', isPinned: true },
@@ -13,23 +13,23 @@ const DEFAULT_RECIPIENTS: Recipient[] = [
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('tg_bot_commander_v2');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('tg_bot_commander_v2');
+      if (saved) {
         const parsed = JSON.parse(saved);
         return {
           ...parsed,
           activeRecipientId: parsed.activeRecipientId || (parsed.recipients[0]?.id || null),
         };
-      } catch (e) {
-        console.error("Failed to load state", e);
       }
+    } catch (e) {
+      console.error("Failed to load state from localStorage", e);
     }
     return {
       botConfig: { botToken: '' },
       recipients: DEFAULT_RECIPIENTS,
       messages: {},
-      activeRecipientId: DEFAULT_RECIPIENTS[0].id,
+      activeRecipientId: DEFAULT_RECIPIENTS[0]?.id || null,
     };
   });
 
@@ -69,7 +69,6 @@ const App: React.FC = () => {
     if (state.botConfig.botToken) {
       try {
         await sendTelegramMessage(state.botConfig, state.activeRecipientId, text);
-        // Mark as read/delivered if successful
         setState(prev => ({
           ...prev,
           messages: {
@@ -80,7 +79,6 @@ const App: React.FC = () => {
           }
         }));
       } catch (err) {
-        // Mark as error if failed
         setState(prev => ({
           ...prev,
           messages: {
@@ -122,23 +120,18 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-white overflow-hidden text-gray-900">
-      {/* Sidebar */}
       <Sidebar 
         recipients={state.recipients} 
         activeId={state.activeRecipientId} 
         onSelect={selectRecipient}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
-
-      {/* Main Chat Area */}
       <ChatWindow 
         recipient={activeRecipient} 
         messages={state.activeRecipientId ? (state.messages[state.activeRecipientId] || []) : []}
         onSendMessage={handleSendMessage}
         botConfigured={!!state.botConfig.botToken}
       />
-
-      {/* Settings Modal */}
       {isSettingsOpen && (
         <SettingsModal 
           config={state.botConfig}
